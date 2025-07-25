@@ -1,0 +1,36 @@
+/* ページ全体を余白なしで */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* キャンバスを中央に置いて白背景に */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
+/* キャンバス本体 */
+#draw-canvas {
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.toolbar {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(255,255,255,0.8);
+  padding: 5px 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  font-size: 14px;
+  z-index: 10;
+}
+.toolbar label {
+  margin-right: 4px;
+}

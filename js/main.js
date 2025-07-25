@@ -3,20 +3,38 @@ window.addEventListener('DOMContentLoaded', () => {
   const ctx = canvas.getContext('2d');
   // カラーピッカーの色を受け取る
   const colorPicker = document.getElementById('color-picker');
-  
+  // 消しゴムボタンを受け取る
+  const eraserButton  = document.getElementById('eraser-button');
+
+  let isDrawing = false;
+  let lastX = 0, lastY = 0;
+  let eraser = false;
+  ctx.lineWidth = 5;
   ctx.strokeStyle = colorPicker.value;
   ctx.fillStyle = colorPicker.value;
-  
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  // カラーピッカーの色に変える
   colorPicker.addEventListener('input', (e) => {
     ctx.strokeStyle = e.target.value;
     ctx.fillStyle   = e.target.value;
   });
 
-  ctx.lineWidth = 5;
+  // 消しゴムボタンでモード切り替え
+  eraserButton.addEventListener('click', () => {
+    eraser = !eraser;
+    eraserButton.classList.toggle('active', eraser);
 
-  let isDrawing = false;
-  let lastX = 0, lastY = 0;
-  
+    if (eraser) {
+      // 消しゴム：描画モードを「消す」に
+      ctx.globalCompositeOperation = 'destination-out';
+    } else {
+      // ブラシ：元に戻す
+      ctx.globalCompositeOperation = 'source-over';
+    }
+  });
+
   // マウスがクリックされた時
   canvas.addEventListener('mousedown', (e) => {
     isDrawing = true;

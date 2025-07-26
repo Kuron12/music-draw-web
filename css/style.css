@@ -20,12 +20,29 @@ body {
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
+button {
+  padding: 2px 6px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+}
+button.active {
+  background: #eee;
+  border-color: #888;
+}
+
 .toolbar {
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+  gap: 8px;
+
   position: fixed;
-  top: 10px;
-  left: 10px;
+  top: 10px; left: 10px;
+
   background: rgba(255,255,255,0.8);
-  padding: 5px 8px;
+  padding: 6px 10px;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   font-size: 14px;
@@ -33,26 +50,4 @@ body {
 }
 .toolbar label {
   margin-right: 4px;
-}
-.eraser {
-  position: fixed;
-  top: 50px;
-  left: 10px;
-  background: rgba(255,255,255,0.8);
-  padding: 5px 8px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  font-size: 14px;
-  z-index: 10;
-}
-.eraser button {
-  padding: 2px 6px;
-  border: 1px solid #bbb;
-  border-radius: 3px;
-  background: #fff;
-  cursor: pointer;
-}
-.eraser button.active {
-  background: #eee;
-  border-color: #888;
 }

@@ -57,6 +57,8 @@ function hslToFreq(h, l) {
 window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('draw-canvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const indCanvas = document.getElementById('indicator-canvas');
+  const indCtx    = indCanvas.getContext('2d');
   // カラーピッカーの色を受け取る
   const colorPicker = document.getElementById('color-picker');
   // 消しゴムボタンを受け取る
@@ -66,10 +68,20 @@ window.addEventListener('DOMContentLoaded', () => {
   
   let columnIndex = 0;      // 今どの列を鳴らすか
   let timerId = null;       // setTimeout の ID
-  const duration = 0.5;     // 各列ごとの再生秒数
+  const duration = 0.25;     // 各列ごとの再生秒数
 
   function playOneColumn(x) {
-    // 1) カウント → 周波数＆振幅設定（最適化パターン）
+    // まずインジケーターをクリア＆描画 ──
+    indCtx.clearRect(0, 0, canvas.width, canvas.height);
+    indCtx.beginPath();
+    indCtx.strokeStyle = 'black';
+    indCtx.lineWidth = 1;
+    // x 座標の中心になるように 0.5px オフセットするとシャープに出ます
+    indCtx.moveTo(x + 0.5, 0);
+    indCtx.lineTo(x + 0.5, canvas.height);
+    indCtx.stroke();
+
+    // カウント → 周波数＆振幅設定（最適化パターン）
     const colorCounts = {};
     const { height } = canvas;
     const col = ctx.getImageData(x, 0, 1, height).data;
@@ -79,7 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
       colorCounts[key] = (colorCounts[key] || 0) + 1;
     }
 
-    // 2) オシレーター＋GainNode で和音再生
+    // オシレーター＋GainNode で和音再生
     for (const [key, count] of Object.entries(colorCounts)) {
       const [r, g, b] = key.split(',').map(Number);
       const [h, s, l] = rgbToHsl(r, g, b);
@@ -107,11 +119,27 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // 初期ブラシ設定
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 50;
   ctx.strokeStyle = colorPicker.value;
   ctx.fillStyle = colorPicker.value;
 
   ctx.globalCompositeOperation = 'source-over';
+
+  // ランダムカラー切り替え (rキー)
+  window.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'r') {
+      // 0x000000～0xFFFFFF の間で乱数を作って16進6桁に
+      const randomColor =
+        '#' +
+        Math.floor(Math.random() * 0x1000000)
+          .toString(16)
+          .padStart(6, '0');
+      colorPicker.value = randomColor;
+      ctx.strokeStyle = randomColor;
+      ctx.fillStyle = randomColor;
+      console.log('Random color →', randomColor);
+    }
+  });
 
   // 色んなボタン
   // 色選択

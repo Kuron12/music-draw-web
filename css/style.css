@@ -12,6 +12,10 @@ body {
   justify-content: center;
   background: #f0f0f0;
 }
+.canvas-wrapper {
+  display: inline-block;
+  position: relative;
+}
 
 /* キャンバス本体 */
 #draw-canvas {

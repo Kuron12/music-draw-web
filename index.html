@@ -12,7 +12,10 @@
             <button id="eraser-button" type="button">消しゴム</button>
             <button id="sound-play-button" type="button">▶️</button>
         </div>
-        <canvas id="draw-canvas" width="800" height="600"></canvas>
+        <div class="canvas-wrapper" style="position: relative;">
+            <canvas id="draw-canvas" width="800" height="600"></canvas>
+            <canvas id="indicator-canvas" width="800" height="600" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
+        </div>
         
         <script src="js/main.js"></script>
     </body>

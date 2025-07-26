@@ -61,8 +61,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const indCtx    = indCanvas.getContext('2d');
   // カラーピッカーの色を受け取る
   const colorPicker = document.getElementById('color-picker');
-  // 消しゴムボタンを受け取る
-  const eraserButton  = document.getElementById('eraser-button');
+  
   const soundPlayButton  = document.getElementById('sound-play-button');
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   
@@ -147,15 +146,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.strokeStyle = e.target.value;
     ctx.fillStyle   = e.target.value;
   });
-
-  // 消しゴムボタン
-  eraserButton.addEventListener('click', () => {
-    const isEraser = eraserButton.classList.toggle('active');
-    ctx.globalCompositeOperation = isEraser
-      ? 'destination-out'
-      : 'source-over';
-  });
-
+  
   // 描画方法
   let isDrawing = false, lastX = 0, lastY = 0;
   // マウスがクリックされた時

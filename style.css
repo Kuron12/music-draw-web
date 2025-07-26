@@ -39,7 +39,7 @@ button.active {
 
 .toolbar {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0; left: 10px; right: 0;
   height: 48px;
   display: flex;
   align-items: center;
@@ -50,5 +50,5 @@ button.active {
   z-index: 10;
 }
 .toolbar label {
-  margin-right: 4px;
+  margin-right: 2px;
 }

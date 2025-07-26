@@ -62,12 +62,14 @@ window.addEventListener('DOMContentLoaded', () => {
   // カラーピッカーの色を受け取る
   const colorPicker = document.getElementById('color-picker');
   
-  const soundPlayButton  = document.getElementById('sound-play-button');
+  const soundPlayButton = document.getElementById('sound-play-button');
+  const randomColorButton = document.getElementById('random-color-button');
+  const speedInput = document.getElementById('speed-input');
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   
   let columnIndex = 0;      // 今どの列を鳴らすか
   let timerId = null;       // setTimeout の ID
-  const duration = 0.25;     // 各列ごとの再生秒数
+  let duration = parseFloat(speedInput.value);
 
   function playOneColumn(x) {
     // まずインジケーターをクリア＆描画 ──
@@ -117,6 +119,19 @@ window.addEventListener('DOMContentLoaded', () => {
     timerId = setTimeout(loopPlay, duration * 1000);
   }
 
+  function applyRandomColor() {
+    // 0x000000～0xFFFFFF の間で乱数を作って16進6桁に
+    const randomColor =
+      '#' +
+      Math.floor(Math.random() * 0x1000000)
+        .toString(16)
+        .padStart(6, '0');
+    colorPicker.value = randomColor;
+    ctx.strokeStyle = randomColor;
+    ctx.fillStyle = randomColor;
+    console.log('Random color →', randomColor);
+  }
+
   // 初期ブラシ設定
   ctx.lineWidth = 50;
   ctx.strokeStyle = colorPicker.value;
@@ -124,33 +139,28 @@ window.addEventListener('DOMContentLoaded', () => {
 
   ctx.globalCompositeOperation = 'source-over';
 
-  // ランダムカラー切り替え (rキー)
-  window.addEventListener('keydown', e => {
-    if (e.key.toLowerCase() === 'r') {
-      // 0x000000～0xFFFFFF の間で乱数を作って16進6桁に
-      const randomColor =
-        '#' +
-        Math.floor(Math.random() * 0x1000000)
-          .toString(16)
-          .padStart(6, '0');
-      colorPicker.value = randomColor;
-      ctx.strokeStyle = randomColor;
-      ctx.fillStyle = randomColor;
-      console.log('Random color →', randomColor);
-    }
-  });
-
   // 色んなボタン
   // 色選択
   colorPicker.addEventListener('input', (e) => {
     ctx.strokeStyle = e.target.value;
     ctx.fillStyle   = e.target.value;
   });
+  // ランダムカラー切り替え (rキー)
+  window.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'r') applyRandomColor();
+  });
+  // ランダムカラー切り替え（ボタン）
+  randomColorButton.addEventListener('click', applyRandomColor);
+  // 速さを変える
+  speedInput.addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    if (!isNaN(v)) duration = v;
+  });
   
   // 描画方法
   let isDrawing = false, lastX = 0, lastY = 0;
   // マウスがクリックされた時
-  canvas.addEventListener('mousedown', (e) => {
+  canvas.addEventListener('pointerdown', (e) => {
     isDrawing = true;
     // 描きはじめの位置をセット
     const rect = canvas.getBoundingClientRect();
@@ -165,7 +175,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // マウスを動かしたとき
-  canvas.addEventListener('mousemove', (e) => {
+  canvas.addEventListener('pointermove', (e) => {
     if (!isDrawing) return;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -181,7 +191,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // マウスを離したとき／キャンバスから出たとき
-  ['mouseup','mouseout'].forEach(evt =>
+  ['pointerup','pointerout'].forEach(evt =>
     canvas.addEventListener(evt, () => { isDrawing = false; })
   );
 
@@ -189,6 +199,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // サウンドトグル
   soundPlayButton.addEventListener('click', () => {
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
     const isPlaying = soundPlayButton.classList.toggle('active');
     if (isPlaying) {
       // 再生開始：ループ呼び出し

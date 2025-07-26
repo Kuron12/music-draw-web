@@ -5,16 +5,16 @@ html, body {
   height: 100%;
 }
 
-/* キャンバスを中央に置いて白背景に */
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 0;
+  padding: 0;
   background: #f0f0f0;
 }
 .canvas-wrapper {
-  display: inline-block;
+  margin: 48px auto 0;    /* ツールバー分の上余白＋左右自動マージン */
+  width: 800px;           /* draw-canvas の width と同じ */
   position: relative;
+  overflow: visible;
 }
 
 /* キャンバス本体 */
@@ -38,19 +38,15 @@ button.active {
 }
 
 .toolbar {
-  display: flex;
-  flex-direction:column;
-  align-items: center;
-  gap: 8px;
-
   position: fixed;
-  top: 10px; left: 10px;
-
-  background: rgba(255,255,255,0.8);
-  padding: 6px 10px;
-  border-radius: 4px;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;             /* 要素間の余白を12pxに */
+  padding: 0 16px;       /* 左右に余裕を */
+  background: rgba(255,255,255,0.9);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  font-size: 14px;
   z-index: 10;
 }
 .toolbar label {

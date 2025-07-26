@@ -65,6 +65,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const soundPlayButton = document.getElementById('sound-play-button');
   const randomColorButton = document.getElementById('random-color-button');
   const speedInput = document.getElementById('speed-input');
+  const fileInput   = document.getElementById('file-input');
+  const downloadBtn = document.getElementById('download-button');
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   
   let columnIndex = 0;      // 今どの列を鳴らすか
@@ -155,6 +157,35 @@ window.addEventListener('DOMContentLoaded', () => {
   speedInput.addEventListener('input', e => {
     const v = parseFloat(e.target.value);
     if (!isNaN(v)) duration = v;
+  });
+
+  // ── 外部画像読み込み ──
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        // キャンバス全体にフィットさせて描画
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── キャンバス画像保存 ──
+  downloadBtn.addEventListener('click', () => {
+    // DataURL を生成
+    const dataURL = canvas.toDataURL('image/png');
+    // 仮のリンクを作ってクリック
+    const link = document.createElement('a');
+    link.href    = dataURL;
+    link.download = 'canvas.png';
+    link.click();
   });
   
   // 描画方法

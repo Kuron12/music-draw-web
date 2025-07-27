@@ -10,6 +10,14 @@ body {
   padding: 0;
   background: #f0f0f0;
 }
+
+input[type="number"],
+input[type="text"],
+select,
+textarea {
+  font-size: 16px;
+}
+
 .canvas-wrapper {
   margin: 48px auto 0;    /* ツールバー分の上余白＋左右自動マージン */
   width: 800px;           /* draw-canvas の width と同じ */
@@ -22,7 +30,7 @@ body {
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  touch-action: none;
+  touch-action: pinch-zoom;
 }
 
 button {
@@ -48,6 +56,11 @@ button.active {
   background: rgba(255,255,255,0.9);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   z-index: 10;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.toolbar > * {
+  flex: 0 0 auto;
 }
 .toolbar label {
   margin-right: 2px;

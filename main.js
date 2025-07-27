@@ -57,6 +57,10 @@ function hslToFreq(h, l) {
 window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('draw-canvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  // 今何本の指がキャンバスに乗っているかを追跡する Set
+  const activePointers = new Set();
+  
   const indCanvas = document.getElementById('indicator-canvas');
   const indCtx    = indCanvas.getContext('2d');
   // カラーピッカーの色を受け取る
@@ -200,22 +204,28 @@ window.addEventListener('DOMContentLoaded', () => {
   let isDrawing = false, lastX = 0, lastY = 0;
   // マウスがクリックされた時
   canvas.addEventListener('pointerdown', (e) => {
-    isDrawing = true;
-    // 描きはじめの位置をセット
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    // 線の太さ分の四角い点を塗りつぶす
-    const size = ctx.lineWidth;
-    ctx.fillRect(x - size/2, y - size/2, size, size);
-    
-    lastX = x;
-    lastY = y;
+    activePointers.add(e.pointerId);
+    if (activePointers.size === 1) {
+      isDrawing = true;
+      // 描きはじめの位置をセット
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      // 線の太さ分の四角い点を塗りつぶす
+      const size = ctx.lineWidth;
+      ctx.fillRect(x - size/2, y - size/2, size, size);
+      
+      lastX = x;
+      lastY = y;
+    } else {
+    // マルチタッチ → 描画抑制
+    isDrawing = false;
+    }
   });
 
   // マウスを動かしたとき
   canvas.addEventListener('pointermove', (e) => {
-    if (!isDrawing) return;
+    if (!isDrawing || activePointers.size > 1) return;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -228,10 +238,18 @@ window.addEventListener('DOMContentLoaded', () => {
     lastX = x;
     lastY = y;
   });
+  // 指が離れた時
+  const endPointer = e => {
+    activePointers.delete(e.pointerId);
+    if (isDrawing && activePointers.size === 0) {
+      // 最後の指が離れたら描画終了
+      isDrawing = false;
+    }
+  };
 
   // マウスを離したとき／キャンバスから出たとき
-  ['pointerup','pointerout'].forEach(evt =>
-    canvas.addEventListener(evt, () => { isDrawing = false; })
+  ['pointerup','pointerout','pointercancel'].forEach(evt =>
+    canvas.addEventListener(evt, endPointer)
   );
 
   console.log('Ready to draw!');

@@ -64,6 +64,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
   const soundPlayButton = document.getElementById('sound-play-button');
   const randomColorButton = document.getElementById('random-color-button');
+  const lineWidth = document.getElementById('line-width');
   const speedInput = document.getElementById('speed-input');
   const fileInput   = document.getElementById('file-input');
   const downloadBtn = document.getElementById('download-button');
@@ -135,7 +136,8 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // 初期ブラシ設定
-  ctx.lineWidth = 50;
+  let currentLineWidth = parseFloat(lineWidth.value) || 50;
+  ctx.lineWidth = currentLineWidth;
   ctx.strokeStyle = colorPicker.value;
   ctx.fillStyle = colorPicker.value;
 
@@ -153,6 +155,12 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   // ランダムカラー切り替え（ボタン）
   randomColorButton.addEventListener('click', applyRandomColor);
+  // 線の幅を変える
+  lineWidth.addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    if (!isNaN(v)) currentLineWidth = v;
+    ctx.lineWidth = currentLineWidth;
+  });
   // 速さを変える
   speedInput.addEventListener('input', e => {
     const v = parseFloat(e.target.value);

@@ -103,18 +103,41 @@ window.addEventListener('DOMContentLoaded', () => {
     for (const [key, count] of Object.entries(colorCounts)) {
       const [r, g, b] = key.split(',').map(Number);
       const [h, s, l] = rgbToHsl(r, g, b);
-      if (s === 0) continue;
+      
+      const baseGain = count / height;
 
       const freq = hslToFreq(h, l);
-      const gainNode = audioCtx.createGain();
-      gainNode.gain.value = count / height;
+
+      // ── ノイズソース ──
+      const noiseBuf = audioCtx.createBuffer(1, 2*audioCtx.sampleRate, audioCtx.sampleRate);
+      const data = noiseBuf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random()*2 - 1;
+      // 再生用のソースノードにバッファをセット
+      const noiseSrc = audioCtx.createBufferSource();
+      noiseSrc.buffer = noiseBuf;
+      const noiseGain = audioCtx.createGain();
+      // sが0ならノイズ100%、sが1ならノイズなし
+      noiseGain.gain.value = baseGain * (1 - s);          // S=0→ノイズ100%、S=1→ノイズ0%
+      noiseSrc.connect(noiseGain).connect(audioCtx.destination);
 
       const osc = audioCtx.createOscillator();
-      osc.type = 'sine';
+      osc.type = 'sawtooth';
       osc.frequency.value = freq;
-      osc.connect(gainNode).connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
+
+      // ローパスフィルターで高次倍音量を調整
+      const filter         = audioCtx.createBiquadFilter();
+      filter.type          = 'lowpass';
+      const minFc = 300, maxFc = 20000;
+      filter.frequency.value = minFc + (maxFc - minFc) * s; 
+      // S=0→fc=300Hz(こもるほど低域のみ)、S=1→fc=20kHz(倍音フル)、中途半端なやつも反映。
+
+      osc.connect(filter).connect(audioCtx.destination);
+
+      const t0 = audioCtx.currentTime;
+      noiseSrc.start(t0);
+      osc.start(t0);
+      noiseSrc.stop(t0 + duration);
+      osc.stop(t0 + duration);
     }
   }
 

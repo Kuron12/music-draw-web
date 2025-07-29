@@ -79,6 +79,9 @@ window.addEventListener('DOMContentLoaded', () => {
   let timerId = null;       // setTimeout の ID
   let duration = parseFloat(speedInput.value);
 
+  // 消しゴム
+  let eraser = false;
+
   function playOneColumn(x) {
     // まずインジケーターをクリア＆描画 ──
     indCtx.clearRect(0, 0, canvas.width, canvas.height);
@@ -151,7 +154,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // duration 秒後にまた呼び出し
     timerId = setTimeout(loopPlay, duration * 1000);
   }
-
+  // ランダム色を作る関数
   function applyRandomColor() {
     // 0x000000～0xFFFFFF の間で乱数を作って16進6桁に
     const randomColor =
@@ -165,13 +168,24 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log('Random color →', randomColor);
   }
 
+  function eraserSwitching() {
+  	eraser = !eraser;
+    eraserButton.classList.toggle('active', eraser);
+
+    if (eraser) {
+      // 消しゴム：描画モードを「消す」に
+      ctx.globalCompositeOperation = 'destination-out';
+    } else {
+      // ブラシ：元に戻す
+      ctx.globalCompositeOperation = 'source-over';
+    }
+  }
+
   // 初期ブラシ設定
   let currentLineWidth = parseFloat(lineWidth.value) || 50;
   ctx.lineWidth = currentLineWidth;
   ctx.strokeStyle = colorPicker.value;
   ctx.fillStyle = colorPicker.value;
-  // 消しゴム
-  let eraser = false;
 
   ctx.globalCompositeOperation = 'source-over';
 
@@ -193,18 +207,13 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!isNaN(v)) currentLineWidth = v;
     ctx.lineWidth = currentLineWidth;
   });
-  // 消しゴムボタンでモード切り替え
+  // 消しゴムボタンでモード切り替え（Eキーでショートカット）
+  window.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'e') 
+    eraserSwitching()
+  });
   eraserButton.addEventListener('click', () => {
-    eraser = !eraser;
-    eraserButton.classList.toggle('active', eraser);
-
-    if (eraser) {
-      // 消しゴム：描画モードを「消す」に
-      ctx.globalCompositeOperation = 'destination-out';
-    } else {
-      // ブラシ：元に戻す
-      ctx.globalCompositeOperation = 'source-over';
-    }
+    eraserSwitching()
   });
   // 速さを変える
   speedInput.addEventListener('input', e => {

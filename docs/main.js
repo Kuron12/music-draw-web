@@ -69,6 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const soundPlayButton = document.getElementById('sound-play-button');
   const randomColorButton = document.getElementById('random-color-button');
   const lineWidth = document.getElementById('line-width');
+  const eraserButton  = document.getElementById('eraser-button');
   const speedInput = document.getElementById('speed-input');
   const fileInput   = document.getElementById('file-input');
   const downloadBtn = document.getElementById('download-button');
@@ -95,6 +96,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const col = ctx.getImageData(x, 0, 1, height).data;
     for (let y = 0; y < height; y++) {
       const i = y * 4;
+      const a = col[i + 3];
+      if (a === 0) continue;
       const key = `${col[i]},${col[i+1]},${col[i+2]}`;
       colorCounts[key] = (colorCounts[key] || 0) + 1;
     }
@@ -103,7 +106,7 @@ window.addEventListener('DOMContentLoaded', () => {
     for (const [key, count] of Object.entries(colorCounts)) {
       const [r, g, b] = key.split(',').map(Number);
       const [h, s, l] = rgbToHsl(r, g, b);
-      
+
       const baseGain = count / height;
 
       const freq = hslToFreq(h, l);
@@ -167,6 +170,8 @@ window.addEventListener('DOMContentLoaded', () => {
   ctx.lineWidth = currentLineWidth;
   ctx.strokeStyle = colorPicker.value;
   ctx.fillStyle = colorPicker.value;
+  // 消しゴム
+  let eraser = false;
 
   ctx.globalCompositeOperation = 'source-over';
 
@@ -187,6 +192,19 @@ window.addEventListener('DOMContentLoaded', () => {
     const v = parseFloat(e.target.value);
     if (!isNaN(v)) currentLineWidth = v;
     ctx.lineWidth = currentLineWidth;
+  });
+  // 消しゴムボタンでモード切り替え
+  eraserButton.addEventListener('click', () => {
+    eraser = !eraser;
+    eraserButton.classList.toggle('active', eraser);
+
+    if (eraser) {
+      // 消しゴム：描画モードを「消す」に
+      ctx.globalCompositeOperation = 'destination-out';
+    } else {
+      // ブラシ：元に戻す
+      ctx.globalCompositeOperation = 'source-over';
+    }
   });
   // 速さを変える
   speedInput.addEventListener('input', e => {

@@ -127,12 +127,12 @@ window.addEventListener('DOMContentLoaded', () => {
       noiseSrc.connect(noiseGain).connect(audioCtx.destination);
 
       const osc = audioCtx.createOscillator();
-      osc.type = 'sawtooth';
+      osc.type = 'sine';
       osc.frequency.value = freq;
 
       // ローパスフィルターで高次倍音量を調整
-      const filter         = audioCtx.createBiquadFilter();
-      filter.type          = 'lowpass';
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
       const minFc = 300, maxFc = 20000;
       filter.frequency.value = minFc + (maxFc - minFc) * s; 
       // S=0→fc=300Hz(こもるほど低域のみ)、S=1→fc=20kHz(倍音フル)、中途半端なやつも反映。

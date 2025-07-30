@@ -56,11 +56,11 @@ button.active {
 .toolbar {
   position: fixed;
   top: 0; left: 10px; right: 0;
-  height: auto;
+  height: 48px;
   display: flex;
   align-items: center;
   gap: 12px;             /* 要素間の余白を12pxに */
-  padding: 8 16px;       /* 左右に余裕を */
+  padding: 0 16px;       /* 左右に余裕を */
   background: rgba(255,255,255,0.9);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   z-index: 10;
@@ -72,9 +72,4 @@ button.active {
 }
 .toolbar label {
   margin-right: 2px;
-}
-
-#color-picker {
-  width: 32px;
-  height: 32px;
 }

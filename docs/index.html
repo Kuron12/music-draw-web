@@ -23,6 +23,30 @@
             <canvas id="draw-canvas" width="800" height="500"></canvas>
             <canvas id="indicator-canvas" width="800" height="500" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
         </div>
+        <section id="instructions">
+            <h2>── 使い方 ──</h2>
+            <ul>
+                <li>🖌️色を選んでキャンバスに描く</li>
+                <li>🎲 色ランダム (R)：ランダムな色に切り替え</li>
+                <li>◻️ 消しゴム：Eキーで消しゴムとブラシ切り替え</li>
+                <li>▶️ 再生：左上から１列ずつ音を鳴らす</li>
+                <li>⏱️ 速さ：再生間隔（秒／ピクセル）を調整</li>
+                <li>💾 画像保存／読み込み：描いた絵をまるごと保存・読込可</li>
+            </ul>
+
+            <h2>── 色→音 変換ルール ──</h2>
+            <ol>
+                <li>色相 (H) → 音階（周波数の基礎）</li>
+                <li>明度 (L) → オクターブ（高い or 低い音域）</li>
+                <li>彩度 (S) → 音色の「こもり／鮮明さ」  
+                <ul>
+                    <li>低Ｓ → ノイズ多めで“こもった”音</li>
+                    <li>高Ｓ → 倍音フィルターを開放して“キラキラ”音</li>
+                </ul>
+                </li>
+                <li>透明ピクセル → 無音エリア</li>
+            </ol>
+            </section>
         <script src="main.js"></script>
     </body>
 </html>

@@ -73,3 +73,6 @@ button.active {
 .toolbar label {
   margin-right: 2px;
 }
+#instructions {
+  padding-bottom: 2rem;
+}
